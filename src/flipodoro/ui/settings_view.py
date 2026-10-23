@@ -6,8 +6,8 @@ Settings modal window.
 
 import tkinter as tk
 from tkinter import messagebox
-from src.core.settings import Settings
-from src.core.constants import (
+from flipodoro.core.settings import Settings
+from flipodoro.core.constants import (
     MIN_DURATION_MINUTES,
     MAX_DURATION_MINUTES,
     MIN_SESSIONS_BEFORE_LONG_BREAK,
@@ -15,35 +15,40 @@ from src.core.constants import (
     APP_NAME,
     APP_VERSION,
 )
-from src.ui.theme import PALETTE, TYPOGRAPHY, SPACING
+from flipodoro.ui.theme import PALETTE, TYPOGRAPHY, SPACING
 
 
 SETTINGS_WIDTH = 460
-SETTINGS_HEIGHT = 540
+SETTINGS_HEIGHT = 620
 
 
 class SettingsView(tk.Toplevel):
 
-    def __init__(self, parent, settings, on_save):
+    def __init__(self, parent, settings, on_save, pinned=False):
         super().__init__(parent)
 
         self._settings = settings
         self._on_save_callback = on_save
+        self._pinned = pinned
 
         self.title(APP_NAME + " - Settings")
         self.resizable(False, False)
         self.configure(bg=PALETTE.bg_primary)
         self.grab_set()
 
-        self._center_on_parent(parent)
+        self._position_on_parent(parent)
         self._build_ui()
         self._populate_values()
 
-    def _center_on_parent(self, parent):
+    def _position_on_parent(self, parent):
         self.geometry(f"{SETTINGS_WIDTH}x{SETTINGS_HEIGHT}")
         self.update_idletasks()
-        x = parent.winfo_x() + (parent.winfo_width() - SETTINGS_WIDTH) // 2
-        y = parent.winfo_y() + (parent.winfo_height() - SETTINGS_HEIGHT) // 2
+        if self._pinned:
+            x = parent.winfo_x() + parent.winfo_width() + 8
+            y = parent.winfo_y()
+        else:
+            x = parent.winfo_x() + (parent.winfo_width() - SETTINGS_WIDTH) // 2
+            y = parent.winfo_y() + (parent.winfo_height() - SETTINGS_HEIGHT) // 2
         self.geometry(f"{SETTINGS_WIDTH}x{SETTINGS_HEIGHT}+{x}+{y}")
 
     def _build_ui(self):
@@ -170,6 +175,21 @@ class SettingsView(tk.Toplevel):
             body, "Play sound on session complete",
         )
 
+        tk.Frame(body, bg=PALETTE.border, height=1).pack(
+            fill=tk.X, pady=SPACING.md
+        )
+
+        # Display
+        self._make_section_label(body, "DISPLAY")
+
+        self._always_on_top_var = self._make_checkbox_row(
+            body, "Always on top",
+        )
+
+        self._minimal_animation_var = self._make_checkbox_row(
+            body, "Minimal animation (no flip)",
+        )
+
         # Version
         tk.Label(
             body,
@@ -258,6 +278,8 @@ class SettingsView(tk.Toplevel):
         self._long_break_var.set(self._settings.long_break_minutes)
         self._sessions_var.set(self._settings.sessions_before_long_break)
         self._sound_var.set(self._settings.sound_enabled)
+        self._always_on_top_var.set(self._settings.always_on_top)
+        self._minimal_animation_var.set(self._settings.minimal_animation)
 
     def _on_save(self):
         try:
@@ -278,6 +300,8 @@ class SettingsView(tk.Toplevel):
         self._settings.long_break_minutes = long_b
         self._settings.sessions_before_long_break = sessions
         self._settings.sound_enabled = self._sound_var.get()
+        self._settings.always_on_top = self._always_on_top_var.get()
+        self._settings.minimal_animation = self._minimal_animation_var.get()
         self._settings.save()
         self._on_save_callback()
         self.destroy()

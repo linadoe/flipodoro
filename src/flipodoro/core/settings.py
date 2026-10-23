@@ -9,13 +9,15 @@ import json
 import os
 import logging
 from typing import Any
-from src.core.constants import (
+from flipodoro.core.constants import (
     APP_NAME,
     SETTINGS_FILENAME,
     DEFAULT_STUDY_MINUTES,
     DEFAULT_SHORT_BREAK_MINUTES,
     DEFAULT_LONG_BREAK_MINUTES,
     DEFAULT_SESSIONS_BEFORE_LONG_BREAK,
+    DEFAULT_ALWAYS_ON_TOP,
+    DEFAULT_MINIMAL_ANIMATION,
     MIN_DURATION_MINUTES,
     MAX_DURATION_MINUTES,
     MIN_SESSIONS_BEFORE_LONG_BREAK,
@@ -33,6 +35,8 @@ class Settings:
         self._long_break_minutes: int = DEFAULT_LONG_BREAK_MINUTES
         self._sessions_before_long_break: int = DEFAULT_SESSIONS_BEFORE_LONG_BREAK
         self._sound_enabled: bool = True
+        self._always_on_top: bool = DEFAULT_ALWAYS_ON_TOP
+        self._minimal_animation: bool = DEFAULT_MINIMAL_ANIMATION
         self.load()
 
     @property
@@ -78,6 +82,22 @@ class Settings:
     def sound_enabled(self, value: bool) -> None:
         self._sound_enabled = bool(value)
 
+    @property
+    def always_on_top(self) -> bool:
+        return self._always_on_top
+
+    @always_on_top.setter
+    def always_on_top(self, value: bool) -> None:
+        self._always_on_top = bool(value)
+
+    @property
+    def minimal_animation(self) -> bool:
+        return self._minimal_animation
+
+    @minimal_animation.setter
+    def minimal_animation(self, value: bool) -> None:
+        self._minimal_animation = bool(value)
+
     def load(self) -> None:
         path = self._settings_path()
         if not os.path.exists(path):
@@ -105,6 +125,8 @@ class Settings:
         self._long_break_minutes = DEFAULT_LONG_BREAK_MINUTES
         self._sessions_before_long_break = DEFAULT_SESSIONS_BEFORE_LONG_BREAK
         self._sound_enabled = True
+        self._always_on_top = DEFAULT_ALWAYS_ON_TOP
+        self._minimal_animation = DEFAULT_MINIMAL_ANIMATION
 
     def _apply(self, data: dict[str, Any]) -> None:
         if "study_minutes" in data:
@@ -117,6 +139,10 @@ class Settings:
             self.sessions_before_long_break = data["sessions_before_long_break"]
         if "sound_enabled" in data:
             self.sound_enabled = data["sound_enabled"]
+        if "always_on_top" in data:
+            self.always_on_top = data["always_on_top"]
+        if "minimal_animation" in data:
+            self.minimal_animation = data["minimal_animation"]
 
     def _to_dict(self) -> dict[str, Any]:
         return {
@@ -125,6 +151,8 @@ class Settings:
             "long_break_minutes": self._long_break_minutes,
             "sessions_before_long_break": self._sessions_before_long_break,
             "sound_enabled": self._sound_enabled,
+            "always_on_top": self._always_on_top,
+            "minimal_animation": self._minimal_animation,
         }
 
     @staticmethod

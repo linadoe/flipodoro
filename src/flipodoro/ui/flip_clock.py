@@ -1,5 +1,5 @@
 import tkinter as tk
-from src.ui.theme import PALETTE, TYPOGRAPHY
+from flipodoro.ui.theme import PALETTE, TYPOGRAPHY
 
 
 CARD_WIDTH = 120
@@ -33,12 +33,20 @@ class FlipDigit(tk.Canvas):
         self._next_char = char
         self._accent = PALETTE.accent_study
         self._animating = False
+        self._minimal = False
         self._draw_static(char)
+
+    def set_minimal(self, enabled: bool):
+        self._minimal = enabled
 
     def set_char(self, char):
         if char == self._char and not self._animating:
             return
         self._next_char = char
+        if self._minimal:
+            self._char = char
+            self._draw_static(char)
+            return
         if not self._animating:
             self._start_flip()
 
@@ -263,6 +271,10 @@ class FlipClock(tk.Frame):
         self._digits.append(s2)
 
         self.set_time(0, 0)
+
+    def set_minimal(self, enabled: bool):
+        for digit in self._digits:
+            digit.set_minimal(enabled)
 
     def set_time(self, minutes, seconds):
         minutes = max(0, min(99, minutes))

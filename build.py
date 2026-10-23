@@ -20,29 +20,29 @@ cmd = [
     "--noconfirm",
 
     # Bundle assets INTO the EXE
-    "--add-data=src/assets;assets",
+    "--add-data=src/flipodoro/assets;assets",
 
     # Hidden imports
-    "--hidden-import=src",
-    "--hidden-import=src.core",
-    "--hidden-import=src.core.constants",
-    "--hidden-import=src.core.settings",
-    "--hidden-import=src.core.timer",
-    "--hidden-import=src.ui",
-    "--hidden-import=src.ui.app",
-    "--hidden-import=src.ui.flip_clock",
-    "--hidden-import=src.ui.settings_view",
-    "--hidden-import=src.ui.theme",
-    "--hidden-import=src.ui.timer_view",
+    "--hidden-import=flipodoro",
+    "--hidden-import=flipodoro.core",
+    "--hidden-import=flipodoro.core.constants",
+    "--hidden-import=flipodoro.core.settings",
+    "--hidden-import=flipodoro.core.timer",
+    "--hidden-import=flipodoro.ui",
+    "--hidden-import=flipodoro.ui.app",
+    "--hidden-import=flipodoro.ui.flip_clock",
+    "--hidden-import=flipodoro.ui.settings_view",
+    "--hidden-import=flipodoro.ui.theme",
+    "--hidden-import=flipodoro.ui.timer_view",
 ]
 
 # Add icon
-icon_path = os.path.join("src", "assets", "icon.ico")
+icon_path = os.path.join("src", "flipodoro", "assets", "icon.ico")
 if os.path.exists(icon_path):
     cmd.append(f"--icon={icon_path}")
     print(f"Using icon: {icon_path}")
 
-cmd.append("src/main.py")
+cmd.append("src/flipodoro/main.py")
 
 print("\nBuilding... this will take 2-3 minutes\n")
 

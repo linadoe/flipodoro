@@ -51,7 +51,7 @@ def main() -> None:
     set_windows_app_id()
 
     try:
-        from src.ui.app import App
+        from flipodoro.ui.app import App
         app = App()
         app.run()
     except Exception as exc:

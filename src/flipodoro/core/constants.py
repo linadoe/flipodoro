@@ -40,8 +40,16 @@ WINDOW_MIN_WIDTH: Final[int] = 480
 WINDOW_MIN_HEIGHT: Final[int] = 380
 WINDOW_DEFAULT_WIDTH: Final[int] = 520
 WINDOW_DEFAULT_HEIGHT: Final[int] = 420
+COMPACT_MIN_WIDTH: Final[int] = 280
+COMPACT_MIN_HEIGHT: Final[int] = 200
 SETTINGS_WINDOW_WIDTH: Final[int] = 420
 SETTINGS_WINDOW_HEIGHT: Final[int] = 480
 
 # Focus mode
 FOCUS_MODE_EXIT_KEY: Final[str] = "<Escape>"
+
+# Always-on-top
+DEFAULT_ALWAYS_ON_TOP: Final[bool] = False
+
+# Minimal animation
+DEFAULT_MINIMAL_ANIMATION: Final[bool] = False

@@ -6,33 +6,35 @@ Main timer screen. Full-window layout.
 
 import tkinter as tk
 from typing import Callable
-from src.core.timer import PomodoroTimer, TimerState
-from src.core.settings import Settings
-from src.core.constants import (
+from flipodoro.core.timer import PomodoroTimer, TimerState
+from flipodoro.core.settings import Settings
+from flipodoro.core.constants import (
     TICK_INTERVAL_MS,
     SESSION_STUDY,
     SESSION_SHORT_BREAK,
     SESSION_LONG_BREAK,
     FOCUS_MODE_EXIT_KEY,
 )
-from src.ui.theme import (
+from flipodoro.ui.theme import (
     PALETTE,
     TYPOGRAPHY,
     SPACING,
     session_accent_color,
     session_label_text,
 )
-from src.ui.flip_clock import FlipClock
+from flipodoro.ui.flip_clock import FlipClock
 
 
 class TimerView(tk.Frame):
 
-    def __init__(self, parent, timer, settings, on_open_settings):
+    def __init__(self, parent, timer, settings, on_open_settings,
+                 on_toggle_always_on_top=None):
         super().__init__(parent, bg=PALETTE.bg_primary)
 
         self._timer = timer
         self._settings = settings
         self._on_open_settings = on_open_settings
+        self._on_toggle_always_on_top = on_toggle_always_on_top
         self._focus_mode = False
         self._tick_job = None
 
@@ -64,6 +66,7 @@ class TimerView(tk.Frame):
         clock_container.pack(expand=True)
 
         self._flip_clock = FlipClock(clock_container)
+        self._flip_clock.set_minimal(self._settings.minimal_animation)
         self._flip_clock.pack()
 
         self._dots_frame = tk.Frame(middle, bg=PALETTE.bg_primary)
@@ -123,6 +126,22 @@ class TimerView(tk.Frame):
             command=self._on_open_settings,
         )
         self._settings_btn.pack(side=tk.RIGHT)
+
+        pin_text = "📌" if self._settings.always_on_top else "📌"
+        self._pin_btn = tk.Button(
+            top,
+            text=pin_text,
+            font=(TYPOGRAPHY.family_body, 14),
+            bd=0,
+            relief=tk.FLAT,
+            fg=PALETTE.accent_study if self._settings.always_on_top else PALETTE.text_muted,
+            bg=PALETTE.bg_primary,
+            activeforeground=PALETTE.text_primary,
+            activebackground=PALETTE.bg_primary,
+            cursor="hand2",
+            command=self._on_toggle_pin,
+        )
+        self._pin_btn.pack(side=tk.RIGHT, padx=(0, 4))
 
     def _rebuild_dots(self):
         for widget in self._dot_labels:
@@ -341,6 +360,14 @@ class TimerView(tk.Frame):
         except (ImportError, RuntimeError):
             pass
 
+    def _on_toggle_pin(self):
+        if self._on_toggle_always_on_top:
+            self._on_toggle_always_on_top()
+
+    def update_pin_button(self, is_on_top: bool):
+        color = PALETTE.accent_study if is_on_top else PALETTE.text_muted
+        self._pin_btn.configure(fg=color)
+
     def on_settings_applied(self):
         self._timer.update_durations(
             study_minutes=self._settings.study_minutes,
@@ -348,4 +375,5 @@ class TimerView(tk.Frame):
             long_break_minutes=self._settings.long_break_minutes,
             sessions_before_long_break=self._settings.sessions_before_long_break,
         )
+        self._flip_clock.set_minimal(self._settings.minimal_animation)
         self._refresh_display()

@@ -9,8 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Planned (v1.1)
-- Fix custom icon in taskbar/title bar
+### Added
+- Always-on-top toggle (pin button in top bar + `T` shortcut + settings checkbox)
+- Minimal animation mode — skips flip animation, redraws digits statically (settings checkbox)
+- New "Display" section in settings for always-on-top and minimal animation
+
+### Fixed
+- Custom icon now persists in taskbar/title bar via `after_idle` reapply workaround
+- Always-on-top state restored on app launch from saved settings
+
+### Planned (v1.1 — remaining)
 - Support durations above 99 minutes
 - Custom completion sound
 - Multiple theme options (light mode + more)
@@ -19,7 +27,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Planned (v1.2)
 - Responsive flip clock scaling
 - System tray support
-- Always-on-top toggle
 
 ---
 

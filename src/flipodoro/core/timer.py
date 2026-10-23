@@ -1,7 +1,7 @@
 import time
 from enum import Enum, auto
 from typing import Callable, Optional
-from src.core.constants import (
+from flipodoro.core.constants import (
     DEFAULT_STUDY_MINUTES,
     DEFAULT_SHORT_BREAK_MINUTES,
     DEFAULT_LONG_BREAK_MINUTES,
@@ -54,19 +54,25 @@ class PomodoroTimer:
         long_break_minutes,
         sessions_before_long_break,
     ):
+        old_current_duration = self._duration_for_session(self._current_session_type)
+
         self._study_minutes = study_minutes
         self._short_break_minutes = short_break_minutes
         self._long_break_minutes = long_break_minutes
         self._sessions_before_long_break = sessions_before_long_break
 
-        self._start_wall_time = None
-        self._state = TimerState.IDLE
-        self._total_seconds = self._duration_for_session(self._current_session_type)
-        self._remaining_seconds = self._total_seconds
-        self._remaining_at_last_start = self._total_seconds
+        new_current_duration = self._duration_for_session(self._current_session_type)
 
-        self._notify_state_change()
-        self._notify_tick()
+        if old_current_duration != new_current_duration or self._state == TimerState.IDLE:
+            self._start_wall_time = None
+            self._state = TimerState.IDLE
+            self._total_seconds = new_current_duration
+            self._remaining_seconds = new_current_duration
+            self._remaining_at_last_start = new_current_duration
+            self._notify_state_change()
+            self._notify_tick()
+        else:
+            self._total_seconds = new_current_duration
 
     def set_on_tick(self, callback):
         self._on_tick = callback

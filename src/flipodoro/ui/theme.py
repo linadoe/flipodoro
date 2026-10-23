@@ -88,7 +88,7 @@ DIMENSIONS = Dimensions()
 
 
 def session_accent_color(session_type: str) -> str:
-    from src.core.constants import (
+    from flipodoro.core.constants import (
         SESSION_STUDY,
         SESSION_SHORT_BREAK,
         SESSION_LONG_BREAK,
@@ -102,7 +102,7 @@ def session_accent_color(session_type: str) -> str:
 
 
 def session_label_text(session_type: str) -> str:
-    from src.core.constants import (
+    from flipodoro.core.constants import (
         SESSION_STUDY,
         SESSION_SHORT_BREAK,
         SESSION_LONG_BREAK,
