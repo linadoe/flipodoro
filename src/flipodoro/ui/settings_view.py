@@ -164,6 +164,10 @@ class SettingsView(tk.Toplevel):
             MAX_SESSIONS_BEFORE_LONG_BREAK,
         )
 
+        self._autostart_var = self._make_checkbox_row(
+            body, "Auto-start next session",
+        )
+
         tk.Frame(body, bg=PALETTE.border, height=1).pack(
             fill=tk.X, pady=SPACING.md
         )
@@ -280,6 +284,7 @@ class SettingsView(tk.Toplevel):
         self._sound_var.set(self._settings.sound_enabled)
         self._always_on_top_var.set(self._settings.always_on_top)
         self._minimal_animation_var.set(self._settings.minimal_animation)
+        self._autostart_var.set(self._settings.autostart)
 
     def _on_save(self):
         try:
@@ -302,6 +307,7 @@ class SettingsView(tk.Toplevel):
         self._settings.sound_enabled = self._sound_var.get()
         self._settings.always_on_top = self._always_on_top_var.get()
         self._settings.minimal_animation = self._minimal_animation_var.get()
+        self._settings.autostart = self._autostart_var.get()
         self._settings.save()
         self._on_save_callback()
         self.destroy()

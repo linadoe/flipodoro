@@ -34,6 +34,7 @@ class TestAlwaysOnTopSetting:
         settings._sound_enabled = True
         settings._always_on_top = True
         settings._minimal_animation = False
+        settings._autostart = False
         d = settings._to_dict()
         assert "always_on_top" in d
         assert d["always_on_top"] is True
@@ -47,6 +48,7 @@ class TestAlwaysOnTopSetting:
         settings._sound_enabled = True
         settings._always_on_top = False
         settings._minimal_animation = False
+        settings._autostart = False
         settings._apply({"always_on_top": True})
         assert settings.always_on_top is True
 
@@ -59,6 +61,7 @@ class TestAlwaysOnTopSetting:
         settings._sound_enabled = True
         settings._always_on_top = True
         settings._minimal_animation = False
+        settings._autostart = False
         settings.reset_to_defaults()
         assert settings.always_on_top is False
 

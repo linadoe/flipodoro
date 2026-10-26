@@ -28,6 +28,7 @@ def _make_settings_no_load():
     s._sound_enabled = True
     s._always_on_top = False
     s._minimal_animation = False
+    s._autostart = False
     return s
 
 
@@ -100,7 +101,7 @@ class TestSerialization:
         expected_keys = {
             "study_minutes", "short_break_minutes", "long_break_minutes",
             "sessions_before_long_break", "sound_enabled",
-            "always_on_top", "minimal_animation",
+            "always_on_top", "minimal_animation", "autostart",
         }
         assert set(d.keys()) == expected_keys
 

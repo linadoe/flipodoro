@@ -42,6 +42,10 @@ WINDOW_DEFAULT_WIDTH: Final[int] = 520
 WINDOW_DEFAULT_HEIGHT: Final[int] = 420
 COMPACT_MIN_WIDTH: Final[int] = 280
 COMPACT_MIN_HEIGHT: Final[int] = 200
+
+# Minibar (minimized pinned window)
+MINIBAR_WIDTH: Final[int] = 300
+MINIBAR_HEIGHT: Final[int] = 36
 SETTINGS_WINDOW_WIDTH: Final[int] = 420
 SETTINGS_WINDOW_HEIGHT: Final[int] = 480
 
@@ -53,3 +57,6 @@ DEFAULT_ALWAYS_ON_TOP: Final[bool] = False
 
 # Minimal animation
 DEFAULT_MINIMAL_ANIMATION: Final[bool] = False
+
+# Autostart next session
+DEFAULT_AUTOSTART: Final[bool] = False

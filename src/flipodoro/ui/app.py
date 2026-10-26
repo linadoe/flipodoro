@@ -14,11 +14,14 @@ from flipodoro.core.constants import (
     WINDOW_MIN_HEIGHT,
     COMPACT_MIN_WIDTH,
     COMPACT_MIN_HEIGHT,
+    MINIBAR_WIDTH,
+    MINIBAR_HEIGHT,
 )
 
 from flipodoro.ui.theme import PALETTE
 from flipodoro.ui.timer_view import TimerView
 from flipodoro.ui.settings_view import SettingsView
+from flipodoro.ui.minibar import MiniBar
 
 
 logger = logging.getLogger(__name__)
@@ -46,9 +49,18 @@ class App:
             long_break_minutes=self._settings.long_break_minutes,
             sessions_before_long_break=self._settings.sessions_before_long_break,
         )
+        self._minimized = False
+        self._saved_geometry = None
         self._root = self._create_root_window()
         self._timer_view = self._create_timer_view()
         self._timer_view.pack(fill=tk.BOTH, expand=True)
+        self._minibar = MiniBar(
+            self._root,
+            timer=self._timer,
+            on_restore=self._restore_from_minibar,
+            on_start_pause=self._minibar_start_pause,
+            on_close=self._on_close,
+        )
         self._root.protocol("WM_DELETE_WINDOW", self._on_close)
         self._bind_shortcuts()
         logger.info("%s v%s started.", APP_NAME, APP_VERSION)
@@ -101,6 +113,7 @@ class App:
             settings=self._settings,
             on_open_settings=self._open_settings,
             on_toggle_always_on_top=self.toggle_always_on_top,
+            on_toggle_minibar=self.toggle_minibar,
         )
 
     def _open_settings(self):
@@ -134,9 +147,69 @@ class App:
         if new_val:
             self._root.minsize(COMPACT_MIN_WIDTH, COMPACT_MIN_HEIGHT)
         else:
+            if self._minimized:
+                self._restore_from_minibar()
             self._root.minsize(WINDOW_MIN_WIDTH, WINDOW_MIN_HEIGHT)
         self._settings.save()
         self._timer_view.update_pin_button(new_val)
+
+    def toggle_minibar(self):
+        if not self._settings.always_on_top:
+            return
+        if self._minimized:
+            self._restore_from_minibar()
+        else:
+            self._enter_minibar()
+
+    def _enter_minibar(self):
+        self._minimized = True
+        self._saved_geometry = self._root.geometry()
+        self._timer_view.pack_forget()
+        self._minibar.pack(fill=tk.BOTH, expand=True)
+        self._root.overrideredirect(True)
+        self._root.minsize(0, 0)
+        self._root.resizable(False, False)
+        screen_w = self._root.winfo_screenwidth()
+        x = (screen_w - MINIBAR_WIDTH) // 2
+        self._root.geometry(f"{MINIBAR_WIDTH}x{MINIBAR_HEIGHT}+{x}+0")
+        self._update_minibar()
+
+    def _restore_from_minibar(self):
+        self._minimized = False
+        self._minibar.pack_forget()
+        self._root.overrideredirect(False)
+        self._root.resizable(True, True)
+        if self._settings.always_on_top:
+            self._root.minsize(COMPACT_MIN_WIDTH, COMPACT_MIN_HEIGHT)
+        else:
+            self._root.minsize(WINDOW_MIN_WIDTH, WINDOW_MIN_HEIGHT)
+        if self._saved_geometry:
+            self._root.geometry(self._saved_geometry)
+        self._root.attributes("-topmost", self._settings.always_on_top)
+        icon_path = get_icon_path()
+        if os.path.exists(icon_path):
+            try:
+                self._root.iconbitmap(default=icon_path)
+            except Exception:
+                pass
+        self._timer_view.pack(fill=tk.BOTH, expand=True)
+
+    def _update_minibar(self):
+        if not self._minimized:
+            return
+        self._minibar.update_display(
+            self._timer.remaining_seconds,
+            self._timer.current_session_type,
+            self._timer.state,
+        )
+        self._root.after(500, self._update_minibar)
+
+    def _minibar_start_pause(self):
+        from flipodoro.core.timer import TimerState
+        if self._timer.state == TimerState.RUNNING:
+            self._timer.pause()
+        else:
+            self._timer.start()
 
     def _bind_shortcuts(self):
         self._root.bind("<space>", lambda e: self._timer_view._on_start_pause())
@@ -149,3 +222,5 @@ class App:
         self._root.bind("<t>", lambda e: self.toggle_always_on_top())
         self._root.bind("<T>", lambda e: self.toggle_always_on_top())
         self._root.bind("<Control-comma>", lambda e: self._open_settings())
+        self._root.bind("<m>", lambda e: self.toggle_minibar())
+        self._root.bind("<M>", lambda e: self.toggle_minibar())

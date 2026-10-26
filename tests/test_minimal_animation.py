@@ -36,6 +36,7 @@ class TestMinimalAnimationSetting:
         settings._sound_enabled = True
         settings._always_on_top = False
         settings._minimal_animation = True
+        settings._autostart = False
         d = settings._to_dict()
         assert "minimal_animation" in d
         assert d["minimal_animation"] is True
@@ -49,6 +50,7 @@ class TestMinimalAnimationSetting:
         settings._sound_enabled = True
         settings._always_on_top = False
         settings._minimal_animation = False
+        settings._autostart = False
         settings._apply({"minimal_animation": True})
         assert settings.minimal_animation is True
 
@@ -61,6 +63,7 @@ class TestMinimalAnimationSetting:
         settings._sound_enabled = True
         settings._always_on_top = False
         settings._minimal_animation = True
+        settings._autostart = False
         settings.reset_to_defaults()
         assert settings.minimal_animation is False
 

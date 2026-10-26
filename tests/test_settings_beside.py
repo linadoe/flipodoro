@@ -21,6 +21,7 @@ class TestSettingsPositionBeside:
         settings._sound_enabled = True
         settings._always_on_top = True
         settings._minimal_animation = False
+        settings._autostart = False
 
         sv = SettingsView(
             parent=tk_root,
@@ -48,6 +49,7 @@ class TestSettingsPositionBeside:
         settings._sound_enabled = True
         settings._always_on_top = False
         settings._minimal_animation = False
+        settings._autostart = False
 
         sv = SettingsView(
             parent=tk_root,

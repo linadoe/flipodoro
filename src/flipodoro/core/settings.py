@@ -18,6 +18,7 @@ from flipodoro.core.constants import (
     DEFAULT_SESSIONS_BEFORE_LONG_BREAK,
     DEFAULT_ALWAYS_ON_TOP,
     DEFAULT_MINIMAL_ANIMATION,
+    DEFAULT_AUTOSTART,
     MIN_DURATION_MINUTES,
     MAX_DURATION_MINUTES,
     MIN_SESSIONS_BEFORE_LONG_BREAK,
@@ -37,6 +38,7 @@ class Settings:
         self._sound_enabled: bool = True
         self._always_on_top: bool = DEFAULT_ALWAYS_ON_TOP
         self._minimal_animation: bool = DEFAULT_MINIMAL_ANIMATION
+        self._autostart: bool = DEFAULT_AUTOSTART
         self.load()
 
     @property
@@ -98,6 +100,14 @@ class Settings:
     def minimal_animation(self, value: bool) -> None:
         self._minimal_animation = bool(value)
 
+    @property
+    def autostart(self) -> bool:
+        return self._autostart
+
+    @autostart.setter
+    def autostart(self, value: bool) -> None:
+        self._autostart = bool(value)
+
     def load(self) -> None:
         path = self._settings_path()
         if not os.path.exists(path):
@@ -127,6 +137,7 @@ class Settings:
         self._sound_enabled = True
         self._always_on_top = DEFAULT_ALWAYS_ON_TOP
         self._minimal_animation = DEFAULT_MINIMAL_ANIMATION
+        self._autostart = DEFAULT_AUTOSTART
 
     def _apply(self, data: dict[str, Any]) -> None:
         if "study_minutes" in data:
@@ -143,6 +154,8 @@ class Settings:
             self.always_on_top = data["always_on_top"]
         if "minimal_animation" in data:
             self.minimal_animation = data["minimal_animation"]
+        if "autostart" in data:
+            self.autostart = data["autostart"]
 
     def _to_dict(self) -> dict[str, Any]:
         return {
@@ -153,6 +166,7 @@ class Settings:
             "sound_enabled": self._sound_enabled,
             "always_on_top": self._always_on_top,
             "minimal_animation": self._minimal_animation,
+            "autostart": self._autostart,
         }
 
     @staticmethod
