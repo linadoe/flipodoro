@@ -265,8 +265,9 @@ class TimerView(tk.Frame):
     def _on_session_complete(self, session_type):
         if self._settings.sound_enabled:
             self._play_completion_sound()
+        self._flash_screen()
         if self._settings.autostart:
-            self.after(500, self._timer.start)
+            self.after(1500, self._timer.start)
 
     def _on_start_pause(self):
         if self._timer.state == TimerState.RUNNING:
@@ -372,12 +373,51 @@ class TimerView(tk.Frame):
             self._tick_job = None
 
     def _play_completion_sound(self):
-        try:
-            import winsound
-            winsound.Beep(880, 150)
-            winsound.Beep(1047, 200)
-        except (ImportError, RuntimeError):
-            pass
+        import threading
+
+        def _beep_sequence():
+            try:
+                import winsound
+                melody = [
+                    (880, 180), (1047, 180), (1319, 250),
+                    (0, 120),
+                    (880, 180), (1047, 180), (1319, 250),
+                    (0, 120),
+                    (1319, 150), (1480, 150), (1760, 400),
+                ]
+                for freq, ms in melody:
+                    if freq == 0:
+                        import time
+                        time.sleep(ms / 1000)
+                    else:
+                        winsound.Beep(freq, ms)
+            except (ImportError, RuntimeError):
+                pass
+
+        threading.Thread(target=_beep_sequence, daemon=True).start()
+
+    def _flash_screen(self):
+        color = session_accent_color(self._timer.current_session_type)
+        steps = [color, PALETTE.bg_primary] * 3
+        self._run_flash(steps, 0)
+
+    def _run_flash(self, steps, index):
+        if index >= len(steps):
+            self.configure(bg=PALETTE.bg_primary)
+            for w in self.winfo_children():
+                try:
+                    w.configure(bg=PALETTE.bg_primary)
+                except tk.TclError:
+                    pass
+            return
+        bg = steps[index]
+        self.configure(bg=bg)
+        for w in self.winfo_children():
+            try:
+                w.configure(bg=bg)
+            except tk.TclError:
+                pass
+        self.after(200, lambda: self._run_flash(steps, index + 1))
 
     def _on_toggle_pin(self):
         if self._on_toggle_always_on_top:
